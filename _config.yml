@@ -16,10 +16,10 @@ timezone: Asia/Ho_Chi_Minh
 
 title: tr0n9_t4m
 
-tagline: I am just a small person in a big world # it will display as the sub-title
+tagline: Yêu em là điều anh không thể ngờ # it will display as the sub-title
 
 description: >- # used by seo meta and the atom feed
-  A blog about CTF writeups with a focus on forensics, OSINT and reverse engineering challenges
+  A blog about CTF writeups with a focus on DFIR.
 
 # Fill in the protocol & hostname for your site.
 # e.g. 'https://username.github.io', note that it does not end with a '/'.
