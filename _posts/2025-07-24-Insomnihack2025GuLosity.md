@@ -256,6 +256,7 @@ $CallWindowProcA.Invoke($execMem, $dataMem, $NtProtectVM, 0, 0)
 ![image](/assets/posts/Insomnihack2025/8.png)
 ##### Đoạn gọi thực thi của CallWindowProcA là `$CallWindowProcA.Invoke($execMem, $dataMem, $NtProtectVM, 0, 0)`
 ##### Vì cấu trúc của CallWindowProcA có dạng 
+
 ```C
 LRESULT CallWindowProcA(
   WNDPROC lpPrevWndFunc, // $execMem +0
