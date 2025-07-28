@@ -62,39 +62,6 @@ Zoom dùng SQLCipher với cấu hình:
 - KDF iterations: 4000
 ```
 
-```mermaid
-graph TD
-
-%% Đăng nhập và nhận khóa kwk
-A1["Người dùng đăng nhập Zoom"] --> A2["Zoom Server xác thực thành công"]
-A2 --> A3["Server gửi kwk (Key Wrapping Key)"]
-A3 --> B1["kwk lưu tạm thời trong RAM"]
-
-%% Sinh main_key và lưu
-B2["Client sinh main_key"] --> B3["main_key mã hóa bằng DPAPI"]
-B3 --> B4["Lưu trong zoom.us.ini (win_osencrypt_key)"]
-
-%% Tạo user_key từ main_key và kwk
-C1["SHA256(main_key)"] 
-C2["SHA256(kwk)"] 
-C1 --> C3["Ghép hash_main_key và hash_kwk"]
-C2 --> C3
-C3 --> C4["SHA256 của chuỗi kết hợp"]
-C4 --> C5["Base64 encode → user_key"]
-
-%% Mã hóa database
-D1["Dữ liệu Zoom Team Chat"] --> D2["Mã hóa bằng SQLCipher với user_key"]
-D2 --> D3["Tạo file zoomus.async.enksdb"]
-
-D4["Thông tin tài khoản & cấu hình"] --> D5["Mã hóa bằng SQLCipher với main_key"]
-D5 --> D6["Tạo file zoomus.enc.db"]
-
-%% Kết nối giữa các phần
-B2 --> C1
-B1 --> C2
-C5 --> D2
-B2 --> D5
-```
 ##### Dựa vào tóm tắt về quy trình mã hóa bên trên ta biết được dịch vụ DPAPI được sử dụng để bảo vệ dữ liệu
 > DPAPI
 
@@ -219,9 +186,10 @@ data: 57 32 6b 2b 30 32 47 7a 42 56 65 5a 4b 4a 68 58 73 6e 52 49 71 4e 72 74 72
 > nefarious92@outlook.com
 
 ##### Dữ liệu các trường bên trong đã bị mã hóa nên chúng ta không đọc được
-![image](https://hackmd.io/_uploads/r1I-nKWmxl.png)
+![image](/assets/posts/htbcrewcrow/10.png)
 ##### Nếu muốn đọc được chúng ta có thể trích xuất key và iv từ sha256 của main_key
-```python=
+
+```python
 from Crypto.Cipher import AES
 from Crypto.Hash import SHA256
 from base64 import b64decode
@@ -242,14 +210,15 @@ plaintext = cipher.decrypt_and_verify(data, tag)
 
 print(plaintext.decode('utf-8'))
 ```
-![image](https://hackmd.io/_uploads/rJQshYZQgg.png)
+![image](/assets/posts/htbcrewcrow/11.png)
 ### 10. What is the Meeting ID?
 ##### Tương tự như câu hỏi trên, Meeting ID có thể được tìm thấy trong bảng zoom_kv 
-![image](https://hackmd.io/_uploads/rJ_HTFZXgx.png)
+![image](/assets/posts/htbcrewcrow/12.png)
 ##### Để giải mã đươc cột value chúng ta cần sử dụng mã SID 
 - Key được tạo từ sha256 của nó.
 - IV được tạo từ cách mã hóa sha256 của key và lấy 16 byte đầu 
-```python=
+
+```python
 import hashlib
 
 sid = b"S-1-5-21-3675116117-3467334887-929386110-1001"
@@ -263,18 +232,18 @@ iv = hashlib.sha256(key).digest()[:0x10]
 print("Key: " + " ".join(format(n, '02x') for n in key))
 print("IV:  " + " ".join(format(n, '02x') for n in iv))
 ```
-![image](https://hackmd.io/_uploads/S1UMJ9Zmge.png)
-![image](https://hackmd.io/_uploads/S1Lvk5Wmle.png)
+![image](/assets/posts/htbcrewcrow/13.png)
+![image](/assets/posts/htbcrewcrow/14.png)
 > ID là 86233834426
 
 ### 11. Retrieve the password used to encrypt the plan PDF file from the meeting chat.
 ##### Giải mã database `zoommeeting.enc.db` theo cách tương tự 
-![image](https://hackmd.io/_uploads/SkF7lcbXlx.png)
+![image](/assets/posts/htbcrewcrow/15.png)
 > EOztYmVeUxp6TmV
 
 ### 12. Discover the location from which the upcoming cyber-attack will be launched.
 ##### Quay lại file pdf bị khóa, dùng mật khẩu EOztYmVeUxp6TmV để mở
-![image](https://hackmd.io/_uploads/BkH5x5WXxx.png)
+![image](/assets/posts/htbcrewcrow/172.png)
 > Eastern Europe
 
 ### Nguồn
