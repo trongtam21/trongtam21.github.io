@@ -119,18 +119,23 @@ $zF=[Text.Encoding]::UTF8;$qW=[Convert]::FromBase64String("ADoHdRg9URIYKjAHF0MDG
 ### Solution
 ##### Bài này cung cấp cho ta 1 file txt bao gồm log của `Microsoft-Windows-Security-Auditing`
 ##### Bước đầu tiên mình lọc các ip đăng nhập không thành công 
-> strings empire_sous_frozen.txt | grep -i "Audit Fail" -A 17 | grep "Client Address"
 
+```
+strings empire_sous_frozen.txt | grep -i "Audit Fail" -A 17 | grep "Client Address"
+```
 ![image](/assets/posts/Midnightflag2025/2.2.png)
 ##### Có thể thấy rằng ip `172.16.100.253` đăng nhập không thành công liên tục vào hệ thống, điều này cho thấy 1 cuộc tấn công bruteforce đang diễn ra. 
 ##### Lọc các tên đăng nhập thành công từ ip này bằng lệnh : 
-> strings empire_sous_frozen.txt | grep -i "Suc" -A 17 | grep -i "172.16.100.253" -B 20
 
+```
+strings empire_sous_frozen.txt | grep -i "Suc" -A 17 | grep -i "172.16.100.253" -B 20
+```
 ##### Bước đầu xác định được user trooper đã bị xâm phạm.
 ![image](/assets/posts/Midnightflag2025/2.4.png)
 ##### Nhìn vào đây ta có thể thấy 1 vài dấu hiệu ro ràng về cuộc tấn công : 
 - Tấn công bruteforce qua Active Directory (Kerberos)
 - Pre-Authentication Type là 0 
+
 ```
 Pre-Authentication Type là 0  nghĩa là Không sử dụng bất kỳ dữ liệu pre-auth nào.
 
