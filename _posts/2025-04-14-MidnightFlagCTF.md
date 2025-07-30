@@ -1,6 +1,6 @@
 ---
-title: ASCIS 2024
-time: 2024-10-09 12:00:00
+title: Midnight FLag CTF 2025
+time: 2024-04-14 12:00:00
 categories: [CTF]
 tags: [CTF,malware,rootkit,registry]
 image: /assets/posts/Midnightflag2025/1500x500.jpeg
