@@ -16,7 +16,7 @@ timezone: Asia/Ho_Chi_Minh
 
 title: tr0n9_t4m
 
-tagline: Yêu em là điều anh không thể ngờ # it will display as the sub-title
+tagline: Chúng ta của sau này cái gì cũng có, chỉ là không có "chúng ta" # it will display as the sub-title
 
 description: >- # used by seo meta and the atom feed
   A blog about CTF writeups with a focus on DFIR.
