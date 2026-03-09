@@ -1,5 +1,5 @@
 ---
-title: Safecracker [HackTheBox sherlocks]
+title: Safecracker - HackTheBox sherlocks
 time: 2025-08-05 12:00:00
 categories: [CTF]
 tags: [malware,ctf,wargame]
