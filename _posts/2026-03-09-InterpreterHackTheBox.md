@@ -1,5 +1,5 @@
 ---
-title: Interpreter - HackTheBox Mmachine WriteUp [Medium]
+title: Interpreter - HackTheBox Machine WriteUp [Medium]
 time: 2025-09-01 12:00:00
 categories: [CTF]
 tags: [CTF,CVE,ctf]
@@ -49,13 +49,13 @@ Nmap done: 1 IP address (1 host up) scanned in 52.33 seconds
 ##### Bên trong là trang sign in, Launch Mirth Connect Administrator cho phép tải xuống file webstart.jnlp
 ![image](/assets/posts/Interpreter-HackTheBoxMachine/3.png)
 ##### Bên trong file bao gồm 1 vài thông tin về server này 
-![image](https://hackmd.io/_uploads/rJxmbA3jK-x.png)
+![image](/assets/posts/Interpreter-HackTheBoxMachine/4.png)
 ##### Có thể thấy server được chạy với version 4.4.0, tìm chúng trên internet, mình xác định được version hiện tại của nó là 4.5.2, cho thấy rằng 4.4.0 đã quá cũ có thể tồn tại rất nhiều lỗ hổng bảo mật: https://github.com/nextgenhealthcare/connect/releases
 ##### Đúng như dự đoán mình tìm thấy CVE có mã là CVE-2023-43208 cho phép RCE.
-![image](https://hackmd.io/_uploads/SkHcuS2Y-x.png)
+![image](/assets/posts/Interpreter-HackTheBoxMachine/5.png)
 ## Exploitation
 ##### Mình sử dụng metasploit để khai thác
-![image](https://hackmd.io/_uploads/SJTJE0jKbe.png)
+![image](/assets/posts/Interpreter-HackTheBoxMachine/6.png)
 ##### Sau khi set xong các thông tin, tiến hành khai thác với lệnh `exploit`
 
 ```
@@ -242,30 +242,30 @@ database.enable-read-write-split = true
 ```
 
 ##### Server này sử dụng Mysql với địa chỉ db là `jdbc:mariadb://localhost:3306/mc_bdd_prod` và sử dụng cred là `mirthdb:MirthPass123!`
-![image](https://hackmd.io/_uploads/S1X2obnFbg.png)
+![image](/assets/posts/Interpreter-HackTheBoxMachine/7.png)
 ##### Trong bảng PERSON và PERSON_PASSWORD ta tìm thấy user có tên là sedric với mật khẩu bị mã hóa thành chuỗi `u/+LBBOUnadiyFBsMOoIDPLbUR0rk59kEkPU17itdrVWA/kLMt3w+w==`
 ##### Bây giờ chúng ta cần biết kiểu mã hóa của nó để tìm cách lấy plaintext password
 ##### Ở trang [Upgrade-Guide](https://github.com/nextgenhealthcare/connect/wiki/4.4.0---Upgrade-Guide) của nextgenhealthcare có thông tin rằng thuật toán hash đã được  thay đổi từ `SHA256` sang `PBKDF2WithHmacSHA256` trong phiên bản 4.4.0 
-![image](https://hackmd.io/_uploads/Ski1aZnFWl.png)
+![image](/assets/posts/Interpreter-HackTheBoxMachine/8.png)
 ##### Mục đích của việc này để làm chậm bruteforce vì hash password lặp lại nhiều lần (iterations). Trong mirth 4.4 số vòng lặp tăng từ 1000 → 600000 có nghĩa là nó hash sha256 600000 lần rồi mới lưu 
 ##### Đọc lại source ở github chính của nó: https://github.com/nextgenhealthcare/connect. Đoạn mã hóa password nằm tại `server/src/com/mirth/connect/server/util/Pre22PasswordChecker.java`
-![image](https://hackmd.io/_uploads/SJHQyz3K-x.png)
+![image](/assets/posts/Interpreter-HackTheBoxMachine/9.png)
 ##### Cấu trúc gồm 8 byte salt + 32 byte password
-![image](https://hackmd.io/_uploads/BkY-Zf2YZe.png)
+![image](/assets/posts/Interpreter-HackTheBoxMachine/10.png)
 ##### Ở trước là salt (bbff8b0413949da7) còn lại là password bị mã hóa (62c8506c30ea080cf2db511d2b939f641243d4d7b8ad76b55603f90b32ddf0fb)
 ##### Tuy đã thêm chống bruteforce, nhưng nếu mật khẩu đủ yếu và máy crack đủ mạnh thì việc lấy được mật khẩu là hoàn toàn khả thi 
 ##### Mình dùng hashcat với mode 10900, tìm thấy format hash  như sau 
-![image](https://hackmd.io/_uploads/B1jiQM2tZe.png)
+![image](/assets/posts/Interpreter-HackTheBoxMachine/11.png)
 ##### Sau khi ghép ta được hash `sha256:600000:u/+LBBOUnac=:YshQbDDqCAzy21EdK5OfZBJD1Ne4rXa1VgP5CzLd8Ps=`
 
 ```
 hashcat -m 10900 hash /usr/share/wordlists/rockyou.txt -D 2
 ```
 
-![image](https://hackmd.io/_uploads/r1NM4MhFbx.png)
+![image](/assets/posts/Interpreter-HackTheBoxMachine/12.png)
 ##### Sau vài giây mình lấy được mật khẩu là `snowflake1` cho user sedric. 
 ##### Đăng nhập vào ssh với user này ta thu được user flag
-![image](https://hackmd.io/_uploads/BkYnEf3KWg.png)
+![image](/assets/posts/Interpreter-HackTheBoxMachine/13.png)
 ## Privilege Escalation
 
 ```
@@ -277,7 +277,7 @@ sedric@interpreter:~$ cd /root
 
 ##### Giờ chúng ta cần leo quyền để vào được root để lấy root flag, mình dùng linpeas.
 ##### Để chuyển được file linpeas.sh vào máy bị xâm nhập, mình mở http server rồi wget file về 
-![image](https://hackmd.io/_uploads/rkeC6MhtZg.png)
+![image](/assets/posts/Interpreter-HackTheBoxMachine/14.png)
 
 ```
 ╔══════════╣ Readable files belonging to root and readable by me but not world readable
@@ -401,8 +401,8 @@ f'''Patient John Doe (M), {datetime.now().year - year_of_birth} years old, recei
 ```
 
 ##### Đây là kết quả debug thử với logic như trên trong  vscode
-![image](https://hackmd.io/_uploads/B1MDBSnKbg.png)
-![image](https://hackmd.io/_uploads/rkl9SHnYWe.png)
+![image](/assets/posts/Interpreter-HackTheBoxMachine/15.png)
+![image](/assets/posts/Interpreter-HackTheBoxMachine/16.png)
 ##### Okay, bây giờ tiến hành khai thác thôi, theo script trên chỉ cho phép các kí tự trong ngoặc vuông `[a-zA-Z0-9._'\"(){}=+/]`, cho nên ta có thể dùng payload này:
 
 ```xml
@@ -419,7 +419,7 @@ f'''Patient John Doe (M), {datetime.now().year - year_of_birth} years old, recei
 </patients>
 ```
 
-![image](https://hackmd.io/_uploads/SyCvvB3FZg.png)
+![image](/assets/posts/Interpreter-HackTheBoxMachine/17.png)
 ##### Trên local đã khai thác thành công, giờ thì triển khai trên server rồi lấy flag thôi 😉
-![image](https://hackmd.io/_uploads/ryc1uHhF-e.png)
+![image](/assets/posts/Interpreter-HackTheBoxMachine/18.png)
 
